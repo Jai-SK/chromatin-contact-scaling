@@ -63,7 +63,7 @@ for ct in ["BLCA", "BRCA", "COAD", "GBMx", "LIHC", "LUAD", "PRAD", "SKCM"]:
 
 # Build per-cancer-type mean alpha for cell lines
 # Map old cell lines to cancer types
-old_cancer_map = {"HCT116": "COAD", "HepG2": "LIHC"}
+old_cancer_map = {}  # ENCODE reference lines (HCT116, HepG2) excluded — not tissue-matched
 cl_type_alpha = {}
 for ct_code in ["BLCA", "BRCA", "COAD", "GBM", "LIHC", "LUAD", "PRAD", "SKCM"]:
     # New cell lines
@@ -197,8 +197,8 @@ TYPE_COLS = {
 }
 DISPLAY = {
     "BLCA": "Bladder (BLCA)", "BRCA": "Breast (BRCA)", "COAD": "Colon (COAD)",
-    "GBMx": "GBM", "LIHC": "Liver (LIHC)", "LUAD": "Lung Adeno (LUAD)",
-    "PRAD": "Prostate (PRAD)", "SKCM": "Melanoma (SKCM)",
+    "GBMx": "Brain (GBM)", "LIHC": "Liver (LIHC)", "LUAD": "Lung Adeno (LUAD)",
+    "PRAD": "Prostate (PRAD)", "SKCM": "Skin (SKCM)",
 }
 
 plt.rcParams.update({"font.family": "sans-serif", "font.size": 9,
