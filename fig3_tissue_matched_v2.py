@@ -21,6 +21,22 @@ from matplotlib.lines import Line2D
 R = "/mnt/c/Users/jaipa/OneDrive/Documents/Dissertation" if platform.system() == "Linux" else r"C:\Users\jaipa\OneDrive\Documents\Dissertation"
 
 tcga_raw = pd.read_csv(os.path.join(R, "TCGA_HiChIP_hic", "TCGA_powerlaw_results.csv"))
+
+# Load 30 GBM patient tumour samples from GSE229962 and merge with TCGA tumour data
+gbm_patient_file = os.path.join(R, "gbm_patient_alpha_results.csv")
+if os.path.exists(gbm_patient_file):
+    gbm_patient = pd.read_csv(gbm_patient_file)
+    # alpha column is stored positive (same convention as TCGA Alpha column)
+    gbm_extra = pd.DataFrame({
+        "Alpha":       gbm_patient["alpha"].values,
+        "Cancer_Type": ["GBMx"] * len(gbm_patient),
+    })
+    tcga_raw = pd.concat([tcga_raw, gbm_extra], ignore_index=True)
+    print(f"Added {len(gbm_patient)} GBM patient samples (GSE229962) to tumour cohort")
+    gbm_all = tcga_raw[tcga_raw["Cancer_Type"] == "GBMx"]
+    print(f"Total GBM tumour samples now: {len(gbm_all)}, mean alpha = {-gbm_all['Alpha'].mean():.3f}")
+else:
+    print(f"WARNING: {gbm_patient_file} not found - GBM tumour n will be TCGA only (n=3)")
 cl_raw   = pd.read_csv(os.path.join(R, "cellline_alpha_results.csv"))
 gbm_cl   = pd.read_csv(os.path.join(R, "gbm_cellline_alpha_results.csv"))
 ps_cl    = pd.read_csv(os.path.join(R, "cellline_ps_curves.csv"))
@@ -48,8 +64,8 @@ TYPE_COLS = {
 }
 DISPLAY = {
     "BLCA": "Bladder\n(BLCA)", "BRCA": "Breast\n(BRCA)", "COAD": "Colon\n(COAD)",
-    "GBMx": "GBM\n(GBMx)",    "LIHC": "Liver\n(LIHC)", "LUAD": "Lung Adeno\n(LUAD)",
-    "PRAD": "Prostate\n(PRAD)", "SKCM": "Melanoma\n(SKCM)",
+    "GBMx": "Brain\n(GBM)",    "LIHC": "Liver\n(LIHC)", "LUAD": "Lung Adeno\n(LUAD)",
+    "PRAD": "Prostate\n(PRAD)", "SKCM": "Skin\n(SKCM)",
 }
 
 per_type = []
