@@ -225,4 +225,4 @@ Supervised by Dr Bingxin Lu, School of Biosciences, University of Surrey.
 
 ## Licence
 
-MIT License — free to use and adapt with attribution.
+MIT License free to use and adapt with attribution.
