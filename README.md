@@ -12,7 +12,7 @@ This repository contains all analysis code for the MSci dissertation:
 
 > *Cancer-wide analysis reveals systematic divergence in chromatin contact scaling between primary tumours and cell line models*
 
-We systematically compare the power-law contact scaling exponent α between 78 primary tumour samples (14 cancer types) and 44 cancer cell lines across eight tissue-matched cancer types. Cell lines show consistently steeper P(s) decay than matched tumours in seven of eight cancer types (median Δα = −0.18; Mann-Whitney U p = 1.81 × 10⁻⁵; Cohen's d = 0.87).
+We systematically compare the power-law contact scaling exponent α between 78 primary tumour samples (14 cancer types) and 44 cancer cell lines across eight tissue-matched cancer types. Cell lines show consistently steeper P(s) decay than matched tumours in seven of eight cancer types (median Δα = -0.18; Mann-Whitney U p = 1.81 × 10⁻⁵; Cohen's d = 0.87).
 
 ---
 
@@ -22,7 +22,7 @@ All scripts live in the repository root. They are grouped below by role in the a
 
 ### Hi-C data processing
 
-Convert raw Hi-C data (`.hic`, `.mcool`, `.allValidPairs`) into `.cool` format, compute P(s) via `cooltools.expected_cis`, and fit the power-law scaling exponent α via OLS regression across the 0.1–10 Mb window.
+Convert raw Hi-C data (`.hic`, `.mcool`, `.allValidPairs`) into `.cool` format, compute P(s) via `cooltools.expected_cis`, and fit the power-law scaling exponent α via OLS regression across the 0.1-10 Mb window.
 
 | Script | Purpose |
 | --- | --- |
@@ -59,7 +59,7 @@ Convert raw Hi-C data (`.hic`, `.mcool`, `.allValidPairs`) into `.cool` format, 
 
 | File | Description |
 | --- | --- |
-| `S1_Table.xlsx` | Cell line provenance and per-sample scaling exponents — referenced as S1 Table in the manuscript |
+| `S1_Table.xlsx` | Cell line provenance and per-sample scaling exponents referenced as S1 Table in the manuscript |
 
 ---
 
@@ -111,7 +111,7 @@ pip install cooler cooltools hic2cool hicstraw numpy pandas scipy matplotlib sea
 
 ### 1. Process raw Hi-C data
 
-Run the cell line pipeline, which converts `.hic` / `.mcool` / `.allValidPairs` inputs to `.cool`, computes P(s), and fits α across 0.1–10 Mb:
+Run the cell line pipeline, which converts `.hic` / `.mcool` / `.allValidPairs` inputs to `.cool`, computes P(s), and fits α across 0.1-10 Mb:
 
 ```bash
 python process_all_cellline_hic.py
@@ -166,7 +166,7 @@ The scaling exponent α was extracted by OLS regression of the linearised model:
 log10 P(s) = α · log10(s) + log10(A)
 ```
 
-Fitting range: **0.1–10 Mb** (mesoscale window isolating TAD and loop extrusion dynamics).
+Fitting range: **0.1-10 Mb** (mesoscale window isolating TAD and loop extrusion dynamics).
 
 ### Statistical tests
 
