@@ -1,213 +1,207 @@
 # Chromatin Contact Scaling Exponents Across Primary Tumours and Cancer Cell Lines
 
 **Author:** Jaipal Singh Kooner
+**Supervisor:** Dr Bingxin Lu
 **Institution:** School of Biosciences, University of Surrey
 **Year:** 2026
 
----
-
-## Overview
-
-This repository contains all analysis code for the MSci dissertation:
+Analysis code for the MSci dissertation:
 
 > *Cancer-wide analysis reveals systematic divergence in chromatin contact scaling between primary tumours and cell line models*
 
-We systematically compare the power-law contact scaling exponent α between 78 primary tumour samples (14 cancer types) and 44 cancer cell lines across eight tissue-matched cancer types. Cell lines show consistently steeper P(s) decay than matched tumours in seven of eight cancer types (median Δα = -0.18; Mann-Whitney U p = 1.81 × 10⁻⁵; Cohen's d = 0.87).
+We compare the power-law contact scaling exponent α, where P(s) ∝ s^α and α is reported as negative (more negative means steeper decay), between 78 primary tumour samples (14 cancer types) and 44 cancer cell lines across eight tissue-matched cancer types. In seven of the eight types, cell lines show steeper P(s) decay than matched tumours (median Δα = −0.18; Mann-Whitney U p = 1.81 × 10⁻⁵; Cohen's d = 0.87). GBM is the exception (Δα = +0.26).
 
 ---
 
-## Repository Contents
+## Repository layout
 
-All scripts live in the repository root. They are grouped below by role in the analysis pipeline.
+```
+chromatin-contact-scaling/
+├── preprocess/      # numbered steps: download Hi-C, compute P(s), fit α, build master table
+├── plotting/        # one script per figure (figN_*), plus supplementary plots (supp_*)
+├── data/
+│   └── S1_Table.xlsx   # supplementary table S1: cell line provenance and per-sample α
+├── LICENSE
+└── README.md
+```
 
-### Hi-C data processing
+### `preprocess/`
 
-Convert raw Hi-C data (`.hic`, `.mcool`, `.allValidPairs`) into `.cool` format, compute P(s) via `cooltools.expected_cis`, and fit the power-law scaling exponent α via OLS regression across the 0.1-10 Mb window.
-
-| Script | Purpose |
-| --- | --- |
-| `process_all_cellline_hic.py` | Pipeline for processing the full cell line cohort (ENCODE + tissue-matched lines) |
-| `process_gbm_celllines.py` | Dedicated pipeline for GBM glioma stem cell lines (GSE280831) and GBM_P4CC3 |
-| `Cell-line_data.py` | Cell line α collation and formatting |
-
-### Data aggregation
-
-| Script | Purpose |
-| --- | --- |
-| `build_master_alpha_table.py` | Consolidates all tumour and cell line α values into the master alpha table used for downstream analysis |
-
-### Statistical analysis
-
-| Script | Purpose |
-| --- | --- |
-| `8_sample_comparison.py` | Tissue-matched tumour vs cell line comparison across the eight cancer types (Mann-Whitney U, Welch's t, Cohen's d, Bonferroni correction for k = 8) |
-| `Tcga_Bx_Plot.py` | TCGA Pan-Cancer Atlas α exploratory analysis and boxplot |
-
-### Figure generation
-
-| Script | Manuscript figure | Description |
+| Script | What it does | Main outputs |
 | --- | --- | --- |
-| `fig1_violin.py` | Fig 1 | Violin / box plot of α for tumours vs cell lines across all cancer types |
-| `fig2_boxplot_by_type.py` | Fig 2 | Cell line α by cancer type |
-| `fig4_ps_curves.py` | Fig 3 | P(s) curves for all cell line samples with mean per-type overlay |
-| `fig3_tissue_matched_v2.py` | Fig 4 | Tissue-matched P(s) curve comparison, eight-panel log-log plot |
-| `DSB_Figure.py` | Fig 5 | Cohesin depletion and DNA double-strand break scaling analysis |
+| `01_download_reference_hic.py` | Downloads and validates reference `.hic` files (GM12878, K562, IMR90, HMEC, HUVEC, NHEK from GSE63525; HCT116 and HepG2 from 4DN). Supports `--dry-run`, `--output` and `--logs`. | `.hic` files, `logs/results_*.csv` |
+| `02_process_cellline_hic.py` | Main cell line pipeline for BLCA, BRCA, LUAD, LIHC, PRAD, SKCM, GBM and COAD. Converts `.hic`, `.mcool`, `.cool`, dense matrices and `allValidPairs` inputs, computes P(s) with `cooltools.expected_cis`, log-bins the curve (200 bins) and fits α by OLS over 100 kb to 10 Mb. | `cellline_alpha_results.csv`, `cellline_ps_curves.csv` |
+| `03_process_gbm_celllines.py` | Handles the GBM glioma stem cell lines from GSE280831 (GSC_320, GSC_728, GSC_810, GSC_387). It uses `hicstraw` because hic2cool cannot read these v9 `.hic` files, and applies the same P(s) and fitting method. | `gbm_cellline_alpha_results.csv`, `gbm_cellline_ps_curves.csv` |
+| `04_build_master_alpha_table.py` | Combines TCGA tumour α, GSE185069 cell line α and published reference values (Rao et al. 2014) into one table. | `DISSERTATION_master_alpha_table.csv` |
 
-> **Note on script names:** `fig3_tissue_matched_v2.py` and `fig4_ps_curves.py` are named for historical draft order, not the final manuscript figure numbers. The correct manuscript mapping is given above.
+### `plotting/`
 
-### Supplementary data
+| Script | Figure | Output files |
+| --- | --- | --- |
+Each script saves its figure as `<script name>.png` and `<script name>.pdf`.
 
-| File | Description |
+| Script | Figure |
 | --- | --- |
-| `S1_Table.xlsx` | Cell line provenance and per-sample scaling exponents referenced as S1 Table in the manuscript |
+| `fig1_violin_tumour_vs_cellline.py` | Fig 1: tumour vs cell line α across all cancer types. **Also computes the main statistics** (Mann-Whitney U, Welch's t, Cohen's d). |
+| `fig2_cellline_alpha_by_type.py` | Fig 2: cell line α by cancer type |
+| `fig3_cellline_ps_curves.py` | Fig 3: P(s) curves for all cell lines, with a per-type mean overlay |
+| `fig4_tissue_matched.py` | Fig 4: tissue-matched tumour vs cell line comparison |
+| `fig5_dsb_cohesin.py` | Fig 5: effect of cohesin knockdown and DNA double-strand breaks (DIvA/OHT) on contact frequency vs distance |
+| `supp_8panel_ps_comparison.py` | Eight-panel plot of tumour vs cell line P(s), one panel per matched cancer type, with α annotated on each panel |
+| `supp_tcga_alpha_boxplot.py` | Exploratory boxplot of TCGA tumour α by cancer type, with cell lines alongside |
 
 ---
 
-## Data Sources
+## Before you run anything: configure paths
 
-| Dataset | Description | Access |
+The scripts do **not** take input paths on the command line. Each script sets a data root near the top:
+
+```python
+# Linux / WSL
+ROOT = "/mnt/c/Users/jaipa/OneDrive/Documents/Dissertation"
+# Windows
+ROOT = r"C:\Users\jaipa\OneDrive\Documents\Dissertation"
+```
+
+The variable is called `ROOT`, `R` or `DATA_ROOT`, depending on the script. Before running a script, set it to your own data directory. All intermediate CSVs and figures are read from and written to this directory.
+
+`fig5_dsb_cohesin.py` is the exception. It reads from `DATA = /mnt/user-data/uploads` and writes to `OUT = /mnt/user-data/outputs/thesis_figures`, so edit both.
+
+Expected layout under `ROOT`, which `02_process_cellline_hic.py` relies on:
+
+```
+ROOT/
+├── GSE148079/          GSE148079_{HT1376,RT4,SCABER,SW780}_HiC.mcool     (BLCA)
+├── GSE167154/          {T47D,ZR7530,HCC1954,HCC70,BT549}.hic             (BRCA)
+├── GSE92804/           GSE92804_ENCFF*_chromatin_interactions.hic        (LUAD, A549)
+├── GSE226216/          GSE226216_{Hep3B,Huh1,Huh7,SNU449}_*.hic          (LIHC)
+├── GSE253407_analysis/ {LC676,…,LC821,GBM_P4CC3}.cool                    (SKCM, GBM)
+├── GSE133928/          SW480_allValidPairs.txt                           (COAD)
+├── GSE280831_GBM_celllines/  GSM86062{79..82}_B6-S*.hic                  (GBM GSCs)
+├── GSE185069_analysis/ cancer_powerlaw_results.csv
+├── TCGA_HiChIP_hic/    TCGA_powerlaw_results.csv, *_chr*_contacts.txt
+└── GSE118629_22Rv1_HiC_40k.normalized.matrix.txt                         (PRAD)
+```
+
+### Inputs not produced by this repository
+
+Some downstream scripts need files that come from steps whose code is not included here. You must supply these yourself:
+
+| File | Used by | Origin |
 | --- | --- | --- |
-| TCGA Pan-Cancer HiChIP | 48 primary tumour samples, H3K27ac HiChIP | [GDC Portal](https://portal.gdc.cancer.gov) |
-| GSE229962 | 30 primary GBM Hi-C samples | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE229962) |
-| GSE118629 | PRAD urological cell lines | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE118629) |
-| GSE92804 | Respiratory cell lines (A549) | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE92804) |
-| GSE280831 | GBM glioma stem cell lines | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE280831) |
-| GSE253407 | Melanoma cell lines | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE253407) |
-| GSE185069 | Pancreatic cell lines | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185069) |
-| GSE133928 | COAD allValidPairs (SW480) | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE133928) |
-| ENCODE | Reference cell lines (GM12878, K562, IMR90, HMEC, NHEK, HUVEC, HepG2, HCT116) | [ENCODE Portal](https://www.encodeproject.org) |
+| `TCGA_HiChIP_hic/TCGA_powerlaw_results.csv` | `04_build_master_alpha_table.py`, most figures | TCGA HiChIP processing (`process_tcga_hichip.py`, not included) |
+| `TCGA_HiChIP_hic/*_chr*_contacts.txt` | `supp_8panel_ps_comparison.py` | Per-chromosome contacts dumped from the TCGA `.hic` files |
+| `gbm_patient_alpha_results.csv`, `gbm_patient_ps_curves.csv` | `fig4_tissue_matched.py`, `supp_8panel_ps_comparison.py`, `supp_tcga_alpha_boxplot.py` | Processing of the GSE229962 primary GBM samples (not included) |
+| `GSE185069_analysis/cancer_powerlaw_results.csv` | `04_build_master_alpha_table.py` | Processing of GSE185069 (not included) |
+| `*_frequencies.csv` (8 DIvA/OHT conditions) | `fig5_dsb_cohesin.py` | Cohesin knockdown and DSB contact-frequency tables |
 
 ---
 
 ## Installation
 
-### Conda environment (recommended)
-
 ```bash
 conda create -n hic-scaling python=3.10
 conda activate hic-scaling
-pip install cooler cooltools hic2cool hicstraw numpy pandas scipy matplotlib seaborn statsmodels openpyxl
+pip install "cooler>=0.9.3" "cooltools>=0.7.1" "hic2cool>=0.8.3" "hicstraw>=1.3.1" \
+            "numpy>=1.24" "pandas>=2.0" "scipy>=1.11" "matplotlib>=3.7" requests openpyxl
 ```
 
-### Minimum package versions
-
-| Package | Version |
-| --- | --- |
-| cooler | ≥ 0.9.3 |
-| cooltools | ≥ 0.7.1 |
-| hic2cool | ≥ 0.8.3 |
-| hicstraw | ≥ 1.3.1 |
-| numpy | ≥ 1.24 |
-| pandas | ≥ 2.0 |
-| scipy | ≥ 1.11 |
-| matplotlib | ≥ 3.7 |
-| seaborn | ≥ 0.12 |
-| statsmodels | ≥ 0.14 |
-| openpyxl | ≥ 3.1 |
+`hic2cool` is called as a command-line tool by `02_process_cellline_hic.py`, so it must be on your `PATH`. `openpyxl` is needed only to open `data/S1_Table.xlsx` with pandas.
 
 ---
 
-## Usage
+## Running the pipeline
 
-### 1. Process raw Hi-C data
-
-Run the cell line pipeline, which converts `.hic` / `.mcool` / `.allValidPairs` inputs to `.cool`, computes P(s), and fits α across 0.1-10 Mb:
+Run the scripts in this order from the repository root, after setting the paths as described above.
 
 ```bash
-python process_all_cellline_hic.py
-python process_gbm_celllines.py
-python Cell-line_data.py
+# 1. (Optional) download reference .hic files
+python preprocess/01_download_reference_hic.py --dry-run          # check URLs only
+python preprocess/01_download_reference_hic.py --output <ROOT>    # download
+
+# 2. Compute P(s) and fit α for cell lines
+python preprocess/02_process_cellline_hic.py
+python preprocess/03_process_gbm_celllines.py
+
+# 3. Build the master α table (needs TCGA and GSE185069 results, see above)
+python preprocess/04_build_master_alpha_table.py
+
+# 4. Figures and statistics
+python plotting/fig1_violin_tumour_vs_cellline.py   # also prints MWU / Welch / Cohen's d
+python plotting/fig2_cellline_alpha_by_type.py
+python plotting/fig3_cellline_ps_curves.py
+python plotting/fig4_tissue_matched.py
+python plotting/fig5_dsb_cohesin.py
+python plotting/supp_8panel_ps_comparison.py
+python plotting/supp_tcga_alpha_boxplot.py
 ```
 
-### 2. Build master α table
-
-```bash
-python build_master_alpha_table.py
-```
-
-### 3. Statistical analysis
-
-```bash
-python 8_sample_comparison.py
-python Tcga_Bx_Plot.py
-```
-
-### 4. Generate figures
-
-```bash
-python fig1_violin.py            # Fig 1: Tumour vs cell line α (overall)
-python fig2_boxplot_by_type.py   # Fig 2: Cell line α by cancer type
-python fig4_ps_curves.py         # Fig 3: P(s) curves for cell lines
-python fig3_tissue_matched_v2.py # Fig 4: Tissue-matched P(s) comparison
-python DSB_Figure.py             # Fig 5: Cohesin depletion / DSB
-```
-
-All figures are saved as both `.png` and `.pdf` in the working directory.
+Each figure is saved to `ROOT` as a 300 dpi `.png` and a `.pdf`.
 
 ---
 
-## Methods Summary
+## Methods summary
 
-### P(s) estimation
-
-Genome-wide contact probability P(s) was estimated using `cooltools.expected_cis` (v0.7.1):
+**P(s) estimation.** Genome-wide cis contact probability is estimated from intra-chromosomal contacts averaged at each diagonal offset d:
 
 ```
-P(d) = (1/N(d)) * Σ C(i, i+d)
+P(d) = (1 / N(d)) · Σ_i C(i, i+d)
 ```
 
-where N(d) is the count of valid bin pairs at diagonal offset d. Genomic bin size: 40 kb or 50 kb.
+N(d) is the number of valid bin pairs at offset d. Most samples use `cooltools.expected_cis`. The GSE280831 GBM lines use an equivalent `hicstraw` implementation on KR-normalised contacts. Bin sizes are 40 or 50 kb for most datasets and 10 kb for GSE253407.
 
-### Power-law fitting
-
-The scaling exponent α was extracted by OLS regression of the linearised model:
+**Power-law fit.** The curve is log-binned into 200 bins and fitted by OLS in log-log space over **100 kb to 10 Mb**, the mesoscale range covering TADs and loop extrusion:
 
 ```
-log10 P(s) = α · log10(s) + log10(A)
+log10 P(s) = −α · log10(s) + log10(A)
 ```
 
-Fitting range: **0.1-10 Mb** (mesoscale window isolating TAD and loop extrusion dynamics).
+Fits need at least 5 points. R² is reported for each sample.
 
-### Statistical tests
+> **Sign convention:** the per-sample results files (`cellline_alpha_results.csv`, `gbm_cellline_alpha_results.csv`) store α as a **positive** number (α = −slope). `DISSERTATION_master_alpha_table.csv` stores the **negative** slope, where more negative means steeper decay. The figure scripts negate the positive values when they load them, so all figures and reported statistics use the negative convention.
 
-| Test | Purpose |
-| --- | --- |
-| Mann-Whitney U | Non-parametric comparison of tumour vs cell line α distributions |
-| Welch's t-test | Parametric comparison (unequal variance) |
-| Cohen's d | Effect size (scale-independent) |
-| Bonferroni correction | Multiple testing across k = 8 tissue-matched comparisons |
+**Statistics** (`fig1_violin_tumour_vs_cellline.py`): two-sided Mann-Whitney U, Welch's t-test and Cohen's d (pooled SD) for tumours vs cell lines.
 
 ### Key results
 
 | Comparison | Result |
 | --- | --- |
-| Overall p-value | 1.81 × 10⁻⁵ (Mann-Whitney U) |
+| Mann-Whitney U, tumour vs cell line | p = 1.81 × 10⁻⁵ |
 | Effect size | Cohen's d = 0.87 |
-| Median Δα | −0.18 |
-| Cancer types with negative Δα | 7 of 8 |
+| Median Δα (cell line − tumour, negative-α convention) | −0.18 |
+| Cancer types where cell lines decay more steeply | 7 of 8 |
 | GBM exception | Δα = +0.26 |
+
+### Polymer interpretation
+
+| Regime | Slope of P(s) | Spatial distance d(s) |
+| --- | --- | --- |
+| Loop-enriched / mitotic-like | ≈ −0.5 | ∝ s^(1/6) |
+| Fractal globule | ≈ −1.0 | ∝ s^(1/3) |
+| Equilibrium globule | ≈ −1.5 | ∝ s^(1/2) |
 
 ---
 
-## Biophysical Model
+## Data sources
 
-Based on the fractal globule polymer model, spatial distance scales with genomic separation as:
-
-```
-d(s) ∝ s^(−α/3)
-```
-
-| Regime | α | d(s) scaling |
+| Dataset | Description | Access |
 | --- | --- | --- |
-| Fractal globule | −1.0 | s^(1/3) |
-| Equilibrium globule | −1.5 | s^(1/2) |
-| Loop-enriched / mitotic | −0.5 | s^(1/6) |
+| TCGA Pan-Cancer HiChIP | 48 primary tumour samples, H3K27ac HiChIP | [GDC Portal](https://portal.gdc.cancer.gov) |
+| GSE229962 | 30 primary GBM Hi-C samples | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE229962) |
+| GSE148079 | Bladder cancer cell lines (BLCA) | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE148079) |
+| GSE167154 | Breast cancer cell lines (BRCA) | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE167154) |
+| GSE92804 | A549 lung adenocarcinoma (LUAD) | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE92804) |
+| GSE226216 | Liver cancer cell lines (LIHC) | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE226216) |
+| GSE118629 | 22Rv1 prostate cancer (PRAD) | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE118629) |
+| GSE253407 | Droplet-HiC: melanoma lines (SKCM) and GBM_P4CC3 | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE253407) |
+| GSE133928 | SW480 colorectal (COAD), allValidPairs | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE133928) |
+| GSE280831 | GBM glioma stem cell lines | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE280831) |
+| GSE185069 | Pancreatic cancer cell lines | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185069) |
+| GSE63525 / 4DN | Reference lines (GM12878, K562, IMR90, HMEC, NHEK, HUVEC; HCT116, HepG2) | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), [4DN](https://data.4dnucleome.org) |
 
 ---
 
 ## Citation
-
-If you use this code, please cite:
 
 ```
 Kooner JS. Cancer-wide analysis reveals systematic divergence in chromatin
@@ -215,14 +209,6 @@ contact scaling between primary tumours and cell line models.
 MSci Dissertation, University of Surrey, 2026.
 ```
 
----
-
-## Acknowledgements
-
-Supervised by Dr Bingxin Lu, School of Biosciences, University of Surrey.
-
----
-
 ## Licence
 
-MIT License free to use and adapt with attribution.
+MIT. See [LICENSE](LICENSE).

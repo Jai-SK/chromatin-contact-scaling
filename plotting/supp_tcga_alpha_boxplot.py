@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-TCGA box plot — all tumour samples, GBM merged into single group
+Supplementary figure: TCGA box plot — all tumour samples, GBM merged into single group
 GBMx (TCGA n=3) + GBM patients (GSE229962 n=30) = GBM (n=33)
 
 Reads: TCGA_powerlaw_results.csv, gbm_patient_alpha_results.csv,
        cellline_alpha_results.csv, DISSERTATION_master_alpha_table.csv,
        gbm_cellline_alpha_results.csv
-Output: fig_tcga_boxplot.png/.pdf
+Output: supp_tcga_alpha_boxplot.png/.pdf
 """
 import os, platform, numpy as np, pandas as pd, matplotlib
 matplotlib.use('Agg')
@@ -82,7 +82,7 @@ ax.text(0.99,0.03,f'N = {len(tcga_all)} tumour samples\n{len(ct_order)} cancer t
 
 plt.tight_layout()
 for e in['png','pdf']:
-    fig.savefig(os.path.join(R,f'fig_tcga_boxplot.{e}'),dpi=300,facecolor='white')
-    print(f"Saved fig_tcga_boxplot.{e}")
+    fig.savefig(os.path.join(R,f'supp_tcga_alpha_boxplot.{e}'),dpi=300,facecolor='white')
+    print(f"Saved supp_tcga_alpha_boxplot.{e}")
 plt.close()
 print("Done")

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Figure 3 UPDATED: Tissue-matched alpha + P(s) curves
+Figure 4: Tissue-matched alpha + P(s) curves
 - Triangles for cell line means, squares for TCGA
 - n=* labels on each column
 - GBM now has 5 cell lines (GBM_P4CC3 + 4 GSCs)
 Reads: TCGA_powerlaw_results.csv, cellline_alpha_results.csv, 
        gbm_cellline_alpha_results.csv, cellline_ps_curves.csv, gbm_cellline_ps_curves.csv
-Output: fig3_tissue_matched_v2.png/.pdf
+Output: fig4_tissue_matched.png/.pdf
 CHANGES: Panel B y-axis label -> Contact probability, P(s); removed grey axvspan
 """
 import os
@@ -177,7 +177,7 @@ ax_b.set_xlim(0.01, 100)
 
 fig.tight_layout()
 for e in ("png", "pdf"):
-    fig.savefig(os.path.join(R, "fig3_tissue_matched_v2." + e), dpi=300, facecolor="white")
-    print("Saved fig3_tissue_matched_v2." + e)
+    fig.savefig(os.path.join(R, "fig4_tissue_matched." + e), dpi=300, facecolor="white")
+    print("Saved fig4_tissue_matched." + e)
 plt.close()
 print("Done.")

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-build_master_alpha_table.py
+04_build_master_alpha_table.py
 ============================
 Generates: DISSERTATION_master_alpha_table.csv
 
@@ -11,6 +11,7 @@ This script compiles the master alpha table from three sources:
      (individual sample α values fitted via process_tcga_hichip.py)
 
   2. GSE185069 — pancreatic cell lines (BxPC3, PANC1) and normal (HPDE6C7)
+     raw format: validpairs.tar.gz
      Source: GSE185069_analysis/cancer_powerlaw_results.csv
      (per-chromosome α values from Du et al. 2022 pipeline, averaged here)
 
@@ -38,7 +39,7 @@ Data locations:
 
 Usage:
   cd /mnt/c/Users/jaipa/OneDrive/Documents/Dissertation
-  python build_master_alpha_table.py
+  python 04_build_master_alpha_table.py
 """
 
 import os

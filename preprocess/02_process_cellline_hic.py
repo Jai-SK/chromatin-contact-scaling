@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-process_all_cellline_hic.py
+02_process_cellline_hic.py
 ============================
 Generates: cellline_alpha_results.csv
 
@@ -35,8 +35,7 @@ Data locations (all relative to DATA_ROOT):
   COAD:  GSE133928/SW480_allValidPairs.txt
 
 Usage:
-  cd /mnt/c/Users/jaipa/OneDrive/Documents/Dissertation
-  python process_all_cellline_hic.py
+  python 02_process_cellline_hic.py
 """
 
 import os
@@ -72,36 +71,48 @@ MIN_POINTS = 5
 # ── Dataset registry ───────────────────────────────────────────────────────────
 # (cancer_type, sample, filepath, format, genome, resolution, GSE_source)
 DATASETS = [
+    # verified data source: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE148079
     # ── BLCA ─ GSE148079 ─ .mcool ─ hg19 ─ 40 kb ──────────────────────────────
     ("BLCA","HT1376", P("GSE148079","GSE148079_HT1376_HiC.mcool"), "mcool","hg19",40_000,"GSE148079"),
     ("BLCA","RT4",    P("GSE148079","GSE148079_RT4_HiC.mcool"),    "mcool","hg19",40_000,"GSE148079"),
     ("BLCA","SCABER", P("GSE148079","GSE148079_SCABER_HiC.mcool"), "mcool","hg19",40_000,"GSE148079"),
     ("BLCA","SW780",  P("GSE148079","GSE148079_SW780_HiC.mcool"),  "mcool","hg19",40_000,"GSE148079"),
 
+    # verified data source: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE167150
     # ── BRCA ─ GSE167154 ─ .hic ─ hg38 ─ 40 kb ───────────────────────────────
+    # GSM5098064_T47D_Intra_Chromosome_Res10_20_40_100_500kb.hic
     ("BRCA","T47D",    P("GSE167154","T47D.hic"),    "hic","hg38",40_000,"GSE167154"),
     ("BRCA","ZR7530",  P("GSE167154","ZR7530.hic"),  "hic","hg38",40_000,"GSE167154"),
     ("BRCA","HCC1954", P("GSE167154","HCC1954.hic"), "hic","hg38",40_000,"GSE167154"),
     ("BRCA","HCC70",   P("GSE167154","HCC70.hic"),   "hic","hg38",40_000,"GSE167154"),
     ("BRCA","BT549",   P("GSE167154","BT549.hic"),   "hic","hg38",40_000,"GSE167154"),
 
+    # verified data source:  https://www.encodeproject.org/experiments/ENCSR393LOP/
+    # four isogenic replicates
     # ── LUAD ─ GSE92804 ─ .hic ─ hg38 ─ 50 kb (native ENCODE resolution) ────
     ("LUAD","A549_rep1",P("GSE92804","GSE92804_ENCFF089KBG_chromatin_interactions.hic"),"hic","hg38",50_000,"GSE92804"),
     ("LUAD","A549_rep2",P("GSE92804","GSE92804_ENCFF378RZT_chromatin_interactions.hic"),"hic","hg38",50_000,"GSE92804"),
     ("LUAD","A549_rep3",P("GSE92804","GSE92804_ENCFF401ZAN_chromatin_interactions.hic"),"hic","hg38",50_000,"GSE92804"),
     ("LUAD","A549_rep4",P("GSE92804","GSE92804_ENCFF939ARM_chromatin_interactions.hic"),"hic","hg38",50_000,"GSE92804"),
 
+    # verified data source: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE226216
     # ── LIHC ─ GSE226216 ─ .hic ─ hg38 ─ 40 kb ───────────────────────────────
     ("LIHC","Hep3B", P("GSE226216","GSE226216_Hep3B_Inter_Intra_Res10_20_40_100_500kb.hic"), "hic","hg38",40_000,"GSE226216"),
     ("LIHC","Huh1",  P("GSE226216","GSE226216_Huh1_Inter_Intra_Res10_20_40_100_500kb.hic"),  "hic","hg38",40_000,"GSE226216"),
     ("LIHC","Huh7",  P("GSE226216","GSE226216_Huh7_Inter_Intra_Res10_20_40_100_500kb.hic"),  "hic","hg38",40_000,"GSE226216"),
     ("LIHC","SNU449",P("GSE226216","GSE226216_SNU449_Inter_Intra_Res10_20_40_100_500kb.hic"),"hic","hg38",40_000,"GSE226216"),
 
+    # verified data source: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE118629
     # ── PRAD ─ GSE118629 ─ ICE-normalised sparse .txt ─ hg19 ─ 40 kb ─────────
     ("PRAD","22Rv1",P("GSE118629_22Rv1_HiC_40k.normalized.matrix.txt"),"txt_ice","hg19",40_000,"GSE118629"),
-
-    # ── SKCM ─ GSE253407 ─ .cool ─ hg38 ─ 10 kb ──────────────────────────────
-    ("SKCM","LC676",P("GSE253407_analysis","LC676.cool"),"cool","hg38",10_000,"GSE253407"),
+    # newly added, likely missing due to inside a folder
+    ("PRAD","C42B",P("GSM3564254_C42B_HiC_40k.normalized.matrix.txt"),"txt_ice","hg19",40_000,"GSE118629"),
+    # normal control
+    ("PRAD","RWPE1",P("GSM3564252_RWPE1_HiC_40k.normalized.matrix.txt"),"txt_ice","hg19",40_000,"GSE118629"),
+    
+    # TODO: check cancer types and file names
+    # ── Mixed ─ GSE253407 ─ ._merged_hg38.sc.pairs.gz ─ hg38 ─ 10 kb ──────────────────────────────
+    ("SKCM","LC676",P("GSE253407_analysis","GSM8020247_LC676_merged_hg38.sc.pairs.gz"),"cool","hg38",10_000,"GSE253407"),
     ("SKCM","LC677",P("GSE253407_analysis","LC677.cool"),"cool","hg38",10_000,"GSE253407"),
     ("SKCM","LC499",P("GSE253407_analysis","LC499.cool"),"cool","hg38",10_000,"GSE253407"),
     ("SKCM","LC500",P("GSE253407_analysis","LC500.cool"),"cool","hg38",10_000,"GSE253407"),
@@ -110,12 +121,24 @@ DATASETS = [
     ("SKCM","LC801",P("GSE253407_analysis","LC801.cool"),"cool","hg38",10_000,"GSE253407"),
     ("SKCM","LC821",P("GSE253407_analysis","LC821.cool"),"cool","hg38",10_000,"GSE253407"),
     ("SKCM","LC789",P("GSE253407_analysis","LC789.cool"),"cool","hg38",10_000,"GSE253407"),
-
     # ── GBM ─ GSE253407 ─ .cool ─ hg38 ─ 10 kb ───────────────────────────────
     ("GBM","GBM_P4CC3",P("GSE253407_analysis","GBM_P4CC3.cool"),"cool","hg38",10_000,"GSE253407"),
 
-    # ── COAD ─ GSE133928 ─ allValidPairs ─ hg19 ─ 40 kb ──────────────────────
-    ("COAD","SW480",P("GSE133928","SW480_allValidPairs.txt"),"allvalidpairs","hg19",40_000,"GSE133928"),
+    # verified data source: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE133928
+    # TODO: lots of missing datasets to download
+    # ── COAD ─ GSE133928 ─ iced.matrix.gz ─ hg19 ─ 40 kb ──────────────────────
+    ("COAD","SW480",P("GSE133928","SW480_40000_iced.matrix.gz"),"allvalidpairs","hg19",40_000,"GSE133928"),
+    # RKO
+    # LS 174T
+    # HCT116
+    # SW480
+    # FHC
+    # WI-38
+    # 7 normal tissues, 12 tumor tissues, tumor BRD3174 with HiCHip not HiC
+    
+    # verified data source: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185069
+    #  GSE185069 — pancreatic cell lines (BxPC3, PANC1) and normal (HPDE6C7) - raw format: validpairs.tar.gz
+    
 ]
 
 

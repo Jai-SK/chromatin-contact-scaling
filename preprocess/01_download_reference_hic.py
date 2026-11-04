@@ -5,8 +5,8 @@ HiC Data Pipeline v3 - VERIFIED WORKING TARGETS ONLY
 Downloads and validates high-depth .hic files for power-law scaling analysis.
 
 Usage:
-    python hic_data_pipeline_v3.py --dry-run    # Check URLs without downloading
-    python hic_data_pipeline_v3.py              # Download all files
+    python 01_download_reference_hic.py --dry-run    # Check URLs without downloading
+    python 01_download_reference_hic.py              # Download all files
     
 Cell Lines Included:
     - HCT116 (colon cancer) - from 4DN Portal
@@ -50,10 +50,21 @@ class HiCTarget:
 TARGETS = [
     # === 4DN Portal (direct .hic file accessions) ===
     # Note: These may require browser download due to authentication
+    # why these two cell lines?
     HiCTarget("4DNFI2TK7L2F", "HCT116", "Gastrointestinal", "4dn_file"),
     HiCTarget("4DNFI1UEG1HD", "HepG2", "Liver", "4dn_file"),
     
     # === GEO GSE63525 - Rao et al. 2014 (verified .hic files) ===
+    # original cell lines: Cell Type	Strain ID	Collection
+    # Human B-lymphoblastoids	GM12878	Coriell Institute for Medical Research; Cadmen, NJ
+    # Human Erythroleukemia	K562 (CCL-243)	American Type Culture Collection; Manassas, VA
+    # Human Lung Fibroblasts	IMR-90 (CCL-186)	American Type Culture Collection; Manassas, VA
+    # Human Mammary Epithelial  (HMEC)	CC-2551	Lonza Walkersville Inc.;                    Walkersville, MD
+    # Near Haploid Human Myelogenous Leukemia	KBM-7 	Haplogen GmbH;                                     Vienna, Austria
+    # Normal Human Epidermal Keratinocytes (NHEK)	192627	Lonza Walkersville Inc.;                 Walkersville, MD
+    # Human Umbilical Vein Endothelial (HUVEC)	CC-2517	Lonza Walkersville Inc.;                 Walkersville, MD
+    # Human Cervical Carcinoma	HeLa-S3 (CCL-2.2)	American Type Culture Collection; Manassas, VA
+    # missing 	KBM-7   
     HiCTarget("GSE63525", "K562", "Reference", "geo", filename_pattern="K562_combined.hic"),
     HiCTarget("GSE63525", "GM12878", "Reference", "geo", filename_pattern="GM12878_insitu_primary.hic"),
     HiCTarget("GSE63525", "IMR90", "Reference", "geo", filename_pattern="IMR90_combined.hic"),

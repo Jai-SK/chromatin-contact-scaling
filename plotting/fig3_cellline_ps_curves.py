@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Figure 4 UPDATED: Cell line P(s) curves — all individual + mean per cancer type
+Figure 3: Cell line P(s) curves — all individual + mean per cancer type
 Now includes 4 new GBM cell lines from GSE280831
 Reads: cellline_alpha_results.csv, cellline_ps_curves.csv,
        gbm_cellline_alpha_results.csv, gbm_cellline_ps_curves.csv
-Output: fig4_ps_curves.png/.pdf
+Output: fig3_cellline_ps_curves.png/.pdf
 CHANGES: Both panel y-axis labels -> Contact probability, P(s)
 """
 import os
@@ -110,7 +110,7 @@ ax_b.set_facecolor("white")
 
 fig.tight_layout()
 for e in ("png", "pdf"):
-    fig.savefig(os.path.join(R, "fig4_ps_curves." + e), dpi=300, facecolor="white")
-    print("Saved fig4_ps_curves." + e)
+    fig.savefig(os.path.join(R, "fig3_cellline_ps_curves." + e), dpi=300, facecolor="white")
+    print("Saved fig3_cellline_ps_curves." + e)
 plt.close()
 print("Done.")

@@ -5,11 +5,11 @@ UPDATED: includes 4 new GSC cell lines from GSE280831
 
 Reads: TCGA_powerlaw_results.csv, cellline_alpha_results.csv,
        DISSERTATION_master_alpha_table.csv, gbm_cellline_alpha_results.csv
-Output: fig1_violin.png, fig1_violin.pdf
+Output: fig1_violin_tumour_vs_cellline.png, fig1_violin_tumour_vs_cellline.pdf
 
 Usage:
     cd /mnt/c/Users/jaipa/OneDrive/Documents/Dissertation
-    python fig1_violin.py
+    python fig1_violin_tumour_vs_cellline.py
 """
 
 import os, platform
@@ -151,7 +151,7 @@ ax.set_xlim(-0.7, 1.7)
 
 fig.tight_layout()
 for ext in ("png", "pdf"):
-    out = os.path.join(ROOT, f"fig1_violin.{ext}")
+    out = os.path.join(ROOT, f"fig1_violin_tumour_vs_cellline.{ext}")
     fig.savefig(out)
     print(f"Saved: {out}")
 plt.close()

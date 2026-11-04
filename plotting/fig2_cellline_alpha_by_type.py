@@ -5,11 +5,11 @@ UPDATED: GBM now n=5 (GBM_P4CC3 + 4 GSC lines from GSE280831)
 
 Reads: cellline_alpha_results.csv, DISSERTATION_master_alpha_table.csv,
        gbm_cellline_alpha_results.csv
-Output: fig2_boxplot_by_type.png / .pdf
+Output: fig2_cellline_alpha_by_type.png / .pdf
 
 Usage:
     cd /mnt/c/Users/jaipa/OneDrive/Documents/Dissertation
-    python fig2_boxplot_by_type.py
+    python fig2_cellline_alpha_by_type.py
 """
 
 import os, platform
@@ -123,7 +123,7 @@ ax.set_xlim(-0.6, len(ordered) - 0.4)
 
 fig.tight_layout()
 for ext in ("png", "pdf"):
-    out = os.path.join(ROOT, f"fig2_boxplot_by_type.{ext}")
+    out = os.path.join(ROOT, f"fig2_cellline_alpha_by_type.{ext}")
     fig.savefig(out)
     print(f"Saved: {out}")
 plt.close()

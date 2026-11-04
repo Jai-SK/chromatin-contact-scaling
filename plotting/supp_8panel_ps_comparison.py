@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Figure 5: 8-panel P(s) — REAL TCGA tumour P(s) vs REAL cell line P(s)
+Supplementary figure: 8-panel P(s) — REAL TCGA tumour P(s) vs REAL cell line P(s)
 UPDATED: Y-axis normalised to contact probability (0–1)
 UPDATED: Alpha values annotated on each panel (per Bingxin)
 
@@ -8,11 +8,11 @@ Reads: TCGA contact txt files, cellline_ps_curves.csv, gbm_cellline_ps_curves.cs
        gbm_patient_ps_curves.csv, TCGA_powerlaw_results.csv, cellline_alpha_results.csv,
        gbm_patient_alpha_results.csv, gbm_cellline_alpha_results.csv,
        DISSERTATION_master_alpha_table.csv
-Output: fig5_8panel_ps.png / .pdf
+Output: supp_8panel_ps_comparison.png / .pdf
 
 Usage:
     cd /mnt/c/Users/jaipa/OneDrive/Documents/Dissertation
-    python fig5_8panel_ps.py
+    python supp_8panel_ps_comparison.py
 """
 import os, platform, glob, numpy as np, pandas as pd, matplotlib
 matplotlib.use("Agg")
@@ -297,7 +297,7 @@ fig.suptitle("P(s) curves by cancer type — tumours vs cell lines",
              fontsize=14, fontweight="bold", y=1.02)
 fig.tight_layout()
 for e in ("png", "pdf"):
-    fig.savefig(os.path.join(R, f"fig5_8panel_ps.{e}"))
-    print(f"Saved fig5_8panel_ps.{e}")
+    fig.savefig(os.path.join(R, f"supp_8panel_ps_comparison.{e}"))
+    print(f"Saved supp_8panel_ps_comparison.{e}")
 plt.close()
 print("Done")

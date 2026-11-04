@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Figure — Cohesin depletion & DSB disrupts contact scaling
+Figure 5: Cohesin depletion & DSB disrupts contact scaling
 Single panel: contact frequency vs genomic distance (8 conditions)
 Data: *_frequencies.csv from DIvA/OHT experiments
 """
@@ -76,6 +76,6 @@ ax.text(0.03, 0.55,
 
 plt.tight_layout()
 for ext in ['png', 'pdf']:
-    fig.savefig(OUT / f'Figure_perturbation.{ext}', dpi=300, facecolor='white')
+    fig.savefig(OUT / f'fig5_dsb_cohesin.{ext}', dpi=300, facecolor='white')
 plt.close()
-print("Done: Figure_perturbation")
+print("Done: fig5_dsb_cohesin")

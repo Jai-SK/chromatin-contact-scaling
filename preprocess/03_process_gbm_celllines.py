@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-process_gbm_celllines.py
+03_process_gbm_celllines.py
 =========================
 Generates: gbm_cellline_alpha_results.csv
 
@@ -42,8 +42,7 @@ Data location:
   (Extract GSE280831_RAW.tar into this folder)
 
 Usage:
-  cd /mnt/c/Users/jaipa/OneDrive/Documents/Dissertation
-  python process_gbm_celllines.py
+  python 03_process_gbm_celllines.py
 """
 
 import os
